@@ -1,14 +1,9 @@
 import { Suspense } from 'react';
-import {
-  useRouteLoaderData,
-  json,
-  redirect,
-  defer,
-  Await,
-} from 'react-router-dom';
+import { useRouteLoaderData, json, redirect, defer, Await } from 'react-router-dom';
 
 import EventItem from '../components/EventItem';
 import EventsList from '../components/EventsList';
+import { axiosClient } from '../util/axiosClient';
 
 function EventDetailPage() {
   const { event, events } = useRouteLoaderData('event-detail');
@@ -16,14 +11,10 @@ function EventDetailPage() {
   return (
     <>
       <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
-        <Await resolve={event}>
-          {(loadedEvent) => <EventItem event={loadedEvent} />}
-        </Await>
+        <Await resolve={event}>{(loadedEvent) => <EventItem event={loadedEvent} />}</Await>
       </Suspense>
       <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
-        <Await resolve={events}>
-          {(loadedEvents) => <EventsList events={loadedEvents} />}
-        </Await>
+        <Await resolve={events}>{(loadedEvents) => <EventsList events={loadedEvents} />}</Await>
       </Suspense>
     </>
   );
@@ -78,11 +69,19 @@ export async function loader({ request, params }) {
 
 export async function action({ params, request }) {
   const eventId = params.eventId;
-  const response = await fetch('http://localhost:8080/events/' + eventId, {
-    method: request.method,
-  });
+  // const response = await fetch('http://localhost:8080/events/' + eventId, {
+  //   method: request.method,
+  // });
 
-  if (!response.ok) {
+  try {
+    const response = await axiosClient({
+      method: request.method,
+      url: '/events/' + eventId,
+    });
+    if (response.status === 200 || response.status === 201) {
+      return redirect('/events');
+    }
+  } catch (error) {
     throw json(
       { message: 'Could not delete event.' },
       {
@@ -90,5 +89,4 @@ export async function action({ params, request }) {
       }
     );
   }
-  return redirect('/events');
 }
