@@ -1,4 +1,4 @@
-import { useRouteLoaderData } from 'react-router-dom';
+import { redirect, useRouteLoaderData } from 'react-router-dom';
 
 import EventForm from '../components/EventForm';
 
@@ -9,3 +9,12 @@ function EditEventPage() {
 }
 
 export default EditEventPage;
+
+export const checkAuth = () => {
+  const token = localStorage.getItem('ACCESS_TOKEN');
+
+  if (!token) {
+    return redirect('/auth?mode=login');
+  }
+  return null;
+};
