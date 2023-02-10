@@ -17,3 +17,7 @@ function RootLayout() {
 }
 
 export default RootLayout;
+
+export const loader = () => {
+  return localStorage.getItem('ACCESS_TOKEN');
+}

@@ -9,9 +9,7 @@ function AuthForm() {
   const { state } = useNavigation();
 
   const isSubmitting = state === 'submitting';
-
-  console.log(data);
-
+  
   return (
     <>
       <Form method="post" className={classes.form}>
