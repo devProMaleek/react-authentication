@@ -27,7 +27,11 @@ export const action = async (request, params) => {
     const response = await axiosClient.post(`/${mode}`, userCredentials);
     if (response.status === 200 || response.status === 201) {
       const token = response.data.token;
+      const expiration = new Date()
+      expiration.setHours(expiration.getHours() + 1)
+      localStorage.setItem('EXPIRATION', expiration.toISOString());
       localStorage.setItem('ACCESS_TOKEN', token);
+
       return redirect('/');
     }
     return response;
